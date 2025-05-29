@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.leng.ice.config.CacheConfig;
 import com.leng.ice.exception.BusinessException;
 import com.leng.ice.service.UserService;
 import com.leng.ice.common.ErrorCode;
@@ -48,6 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     UserMapper userMapper;
+
     @Resource
     private CosUtils cosUtils;
 
@@ -56,6 +58,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Resource
     private RedissonClient redissonClient;
+
+    @Resource
+    private CacheConfig cacheConfig;
 
     /**
      * 盐值,密码加密
@@ -453,7 +458,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public List<User> getRecommend() {
-
         //反复抢锁 保证数据一致性
         List<User> userList = new ArrayList<>();
         //获取锁
@@ -472,12 +476,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                             , "userProfile", "avatarUrl", "gender", "phone"
                             , "email", "tags", "userRole", "updateTime", "createTime", "userState");
                     userList = this.list(queryWrapper);
+                    // 在写缓存的地方修改（大约第477行）
                     ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-                    //写缓存
+                    //写缓存，设置过期时间
                     try {
-                        valueOperations.set(RedisConstant.REDIS_RECOMMEND_KEY,userList);
+                        valueOperations.set(RedisConstant.REDIS_RECOMMEND_KEY, userList, 
+                                           cacheConfig.getUserRecommendTtl(TimeUnit.SECONDS), 
+                                           TimeUnit.SECONDS);
+
                     } catch (Exception e) {
-                        log.error("redis set key error",e);
+                        log.error("redis set key error", e);
                     }
                     return userList;
                 }

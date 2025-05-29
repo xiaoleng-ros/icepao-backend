@@ -18,8 +18,18 @@ spring:
   redis:
     port: 6379
     host: localhost
-    database: 3
+    database: 1
     password: leng5201314
+    # 新增缓存配置
+    cache:
+      # 默认过期时间（秒）
+      default-ttl: 3600  # 1小时
+      # 不同业务模块的过期时间
+      ttl:
+        user-recommend: 7200    # 用户推荐：2小时
+        post-comment: 1800      # 帖子评论：30分钟
+        user-info: 3600         # 用户信息：1小时
+        team-info: 1800         # 队伍信息：30分钟
 
   mvc:
     path-match:
@@ -52,8 +62,8 @@ mybatis-plus:
 # 腾讯云对象储存
 cos:
   client:
-    accessKey: xxxxxxxxxxxxxxx    # 腾讯云 SecretId
-    secretKey: xxxxxxxxxxxxxxx    # 腾讯云 SecretKey
+    accessKey: AKIDd6KL7ewwmPo0xjHafW7TZQ2PYT9dwznL    # 腾讯云 SecretId
+    secretKey: LRIuLXUXQ4SbVAd0LdiY9VbS3atKZZKq   # 腾讯云 SecretKey
     region: ap-chengdu  # 腾讯云 COS 所在区域
     bucket: xiaoleng-1333106413  # 腾讯云 COS Bucket 名称
 file:

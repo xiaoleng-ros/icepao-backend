@@ -88,7 +88,7 @@ create table user
     username     varchar(256)                        null comment '用户昵称',
     userAccount  varchar(256)                        null comment '用户账号',
     userProfile  varchar(512)                        null comment '用户自我介绍',
-    gender       tinyint                             null comment '性别',
+    gender       tinyint                             null comment '性别（0-男, 1-女）',
     userPassword varchar(512)                        not null comment '密码',
     phone        varchar(128)                        null comment '电话',
     email        varchar(512)                        null comment '信箱',

@@ -227,7 +227,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容字数不符合要求");
         }
         //判断评论的pid,pid为null代表该条评论pid是帖子的创建者，反之是回复者的id
-
         PostComment postComment = new PostComment();
         BeanUtils.copyProperties(postCommentAddRequest, postComment);
         //判断评论的父id
@@ -273,7 +272,6 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
                     //1为评论
                     notice.setContentType(1);
                     long addNotice = noticeService.addNotice(notice);
-
                     if (addNotice<0) throw new BusinessException(ErrorCode.SYSTEM_ERROR,"通知失败");
                     //更新缓存
                     if (result){

@@ -30,6 +30,7 @@ public class PostCommentVO implements Serializable {
      * 头像
      */
     private String avatarUrl;
+
     /**
      * 评论帖子id
      */

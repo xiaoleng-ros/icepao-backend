@@ -31,16 +31,6 @@ public class Post implements Serializable {
     private String content;
 
     /**
-     * 图片URL列表，使用JSON数组存储
-     */
-    private String imageUrls;
-
-    /**
-     * 视频URL
-     */
-    private String videoUrl;
-
-    /**
      * 点赞数
      */
     private Integer thumbNum;

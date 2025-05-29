@@ -3,6 +3,7 @@ package com.leng.ice.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.leng.ice.common.ErrorCode;
+import com.leng.ice.config.CacheConfig;
 import com.leng.ice.contant.RedisConstant;
 import com.leng.ice.exception.BusinessException;
 import com.leng.ice.mapper.PostCommentMapper;
@@ -41,6 +42,9 @@ public class PostCommentServiceImpl extends ServiceImpl<PostCommentMapper, PostC
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private CacheConfig cacheConfig;
 
     /**
      * 获取帖子评论列表
@@ -89,12 +93,15 @@ public class PostCommentServiceImpl extends ServiceImpl<PostCommentMapper, PostC
                             postCommentVO.setAvatarUrl(user.getAvatarUrl());
                         });
                     }
+                    // 在写缓存的地方修改（大约第93行）
                     ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
-                    //写缓存
+                    //写缓存，设置过期时间
                     try {
-                        valueOperations.set(RedisConstant.REDIS_POST_COMMENT_KEY+postId,postCommentVOList);
+                        valueOperations.set(RedisConstant.REDIS_POST_COMMENT_KEY + postId, postCommentVOList,
+                                           cacheConfig.getPostCommentTtl(TimeUnit.SECONDS),
+                                           TimeUnit.SECONDS);
                     } catch (Exception e) {
-                        log.error("redis set key error",e);
+                        log.error("redis set key error", e);
                     }
                     return postCommentVOList;
                 }
@@ -118,10 +125,10 @@ public class PostCommentServiceImpl extends ServiceImpl<PostCommentMapper, PostC
      */
     @Override
     public List<PostCommentVO> getPostCommentVOListCache(Long postId) {
-        //查询缓存
+        //1.查询缓存
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
         List<PostCommentVO> postCommentVOList= (List<PostCommentVO>) valueOperations.get(RedisConstant.REDIS_POST_COMMENT_KEY+postId);
-        //缓存为空，查询数据库并写入缓存,不为空返回缓存数据
+        //2.缓存为空，查询数据库并写入缓存,不为空返回缓存数据
         return postCommentVOList == null ? getPostCommentVOList(postId):postCommentVOList;
     }
 }
