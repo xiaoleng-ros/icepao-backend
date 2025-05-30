@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -261,6 +262,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)  // 添加事务注解
     public boolean updateUser(User user, HttpServletRequest httpServletRequest) {
         long userId = user.getId();
         //todo 对传递来的user参数判断，不能为空等等，增加判断条件,同时更新会话的信息

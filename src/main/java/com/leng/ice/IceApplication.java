@@ -5,11 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @MapperScan("com.leng.ice.mapper")
 @EnableScheduling
 @EnableAspectJAutoProxy(exposeProxy = true)
+@EnableTransactionManagement  // 添加这个注解
 public class IceApplication {
 
     public static void main(String[] args) {

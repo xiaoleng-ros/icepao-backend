@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -98,6 +99,7 @@ public class TeamTaskServiceImpl extends ServiceImpl<TeamTaskMapper, TeamTask>
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)  // 添加事务注解
     public Boolean deleteTeamTask(Long id, User loginUser) {
         TeamTask teamTask = this.getById(id);
         if (teamTask == null) {
@@ -238,6 +240,7 @@ public class TeamTaskServiceImpl extends ServiceImpl<TeamTaskMapper, TeamTask>
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)  // 添加事务注解
     public Boolean deleteComment(Long id, User loginUser) {
         TeamTaskComment teamTaskComment = teamTaskCommentService.getById(id);
         if (teamTaskComment == null) {

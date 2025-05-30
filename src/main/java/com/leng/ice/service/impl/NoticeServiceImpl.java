@@ -18,6 +18,7 @@ import com.leng.ice.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)  // 添加事务注解
     public boolean deleteNotice(Long id, User loginUser) {
         Notice notice = this.getById(id);
         if (notice == null) {
@@ -92,6 +94,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)  // 添加事务注解
     public boolean updateNotice(NoticeUpdateRequest noticeUpdateRequest, User loginUser) {
         Notice oldNotice = this.getById(noticeUpdateRequest.getId());
         if (oldNotice == null) {
