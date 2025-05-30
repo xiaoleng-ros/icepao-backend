@@ -79,7 +79,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
         if (notice == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "通知不存在");
         }
-        //是否为通知的接收者或者管理员
+        //是否为通知的接收者或者管理员 
         Long userId = notice.getReceiverId();
         if (!userService.isAdmin(loginUser) && userId != loginUser.getId()) {
             throw new BusinessException(ErrorCode.NO_ADMIN);
@@ -126,29 +126,40 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
         if (notice == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "通知不存在");
         }
-        //查询发送者的信息
+        
+        // 查询发送者的信息
         Long senderId = notice.getSenderId();
         User sender = userService.getById(senderId);
+        if (sender == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "发送者不存在");
+        }
         String senderUsername = sender.getUsername();
-
-        //查询接收者的信息
+        
+        // 查询接收者的信息
         Long receiverId = notice.getReceiverId();
         User receiver = userService.getById(receiverId);
+        if (receiver == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "接收者不存在");
+        }
         String receiverUsername = receiver.getUsername();
-
-        //查询对象内容（帖子）
+        
+        // 查询对象内容（帖子）
         Long targetId = notice.getTargetId();
-        //代理 todo 可以采用反射方法对应不同的通知
         Post target = postService.getById(targetId);
+        if (target == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "目标帖子不存在");
+        }
+        
         String content = target.getContent();
-        if (content.length() > 20) {
+        if (content != null && content.length() > 20) {
             content = content.substring(0, 20) + "...";
         }
+        
         NoticeVO noticeVO = new NoticeVO();
         BeanUtils.copyProperties(notice, noticeVO);
         noticeVO.setReceiverName(receiverUsername);
         noticeVO.setSenderName(senderUsername);
-        noticeVO.setTargetContent(content);
+        noticeVO.setTargetContent(content != null ? content : "");
         return noticeVO;
     }
 
@@ -164,30 +175,41 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
         if (notice == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "通知不存在");
         }
-        //查询发送者的信息
+        // 查询发送者的信息
         Long senderId = notice.getSenderId();
         User sender = userService.getById(senderId);
-        String senderUsername = sender.getUsername();
-
-        //查询对象内容（帖子）
-        Long targetId = notice.getTargetId();
-        String content="";
-        //代理 todo 可以采用反射方法对应不同的通知
-        if (notice.getContentType()!=5){
-            Post target = postService.getById(targetId);
-            content = target.getContent();
-        }else {
-            TeamTaskVO teamTaskInfo = teamTaskService.getTeamTaskInfoById(targetId);
-            content=teamTaskInfo.getDescription();
+        if (sender == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "发送者不存在");
         }
-        if (content.length() > 20) {
+        String senderUsername = sender.getUsername();
+        // 查询对象内容
+        Long targetId = notice.getTargetId();
+        String content = "";
+        if (notice.getContentType() != 5) {
+            Post target = postService.getById(targetId);
+            if (target == null) {
+                // 容错处理：帖子不存在时显示默认内容
+                content = "[原帖子已删除]";
+            } else {
+                content = target.getContent();
+            }
+        } else {
+            TeamTaskVO teamTaskInfo = teamTaskService.getTeamTaskInfoById(targetId);
+            if (teamTaskInfo == null) {
+                // 容错处理：任务不存在时显示默认内容
+                content = "[原任务已删除]";
+            } else {
+                content = teamTaskInfo.getDescription();
+            }
+        }
+        if (content != null && content.length() > 20) {
             content = content.substring(0, 20) + "...";
         }
         NoticeVO noticeVO = new NoticeVO();
         BeanUtils.copyProperties(notice, noticeVO);
         noticeVO.setReceiverName(receiverUsername);
         noticeVO.setSenderName(senderUsername);
-        noticeVO.setTargetContent(content);
+        noticeVO.setTargetContent(content != null ? content : "");
         return noticeVO;
     }
 
