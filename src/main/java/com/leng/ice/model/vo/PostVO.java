@@ -53,6 +53,11 @@ public class PostVO implements Serializable {
     private boolean isThumb;
 
     /**
+     * 评论数量（动态计算，不存储在数据库）
+     */
+    private Integer commentCount;
+
+    /**
      * 帖子的评论
      */
     private List<PostCommentVO> postCommentList;

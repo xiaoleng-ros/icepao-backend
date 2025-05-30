@@ -172,6 +172,10 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         Long postVOId = postVO.getId();
         //查询缓存，没有缓存就查询数据库并更新缓存
         List<PostCommentVO> postCommentVOList = postCommentService.getPostCommentVOListCache(postVOId);
+        
+        // 设置评论数量
+        postVO.setCommentCount(postCommentVOList.size());
+        
         if (postCommentVOList.size() >5){
             postCommentVOList = postCommentVOList.subList(0,5);
         }
@@ -201,6 +205,13 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         Long postVOId = postVO.getId();
         //查询缓存，没有缓存就查询数据库并更新缓存
         List<PostCommentVO> postCommentVOList = postCommentService.getPostCommentVOListCache(postVOId);
+        
+        // 设置评论数量
+        postVO.setCommentCount(postCommentVOList.size());
+        
+        // 设置评论数量
+        postVO.setCommentCount(postCommentVOList.size());
+        
         postVO.setPostCommentList(postCommentVOList);
         return postVO;
     }
