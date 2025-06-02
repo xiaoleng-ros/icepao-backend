@@ -25,7 +25,9 @@ public class timedTasksJob {
     @Resource
     private TeamService teamService;
 
-    // 每天执行，解散过期队伍
+    /**
+     * 每天0点执行解散过期队伍
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteOutTeam() {
         //移除所有队伍中用户

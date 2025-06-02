@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @MapperScan("com.leng.ice.mapper")
 @EnableScheduling
 @EnableAspectJAutoProxy(exposeProxy = true)
-@EnableTransactionManagement  // 添加这个注解
+@EnableTransactionManagement
 public class IceApplication {
 
     public static void main(String[] args) {

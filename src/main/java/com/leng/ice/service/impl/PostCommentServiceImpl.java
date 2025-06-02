@@ -71,7 +71,7 @@ public class PostCommentServiceImpl extends ServiceImpl<PostCommentMapper, PostC
                     queryWrapper.eq("postId", postId);
                     List<PostComment> postCommentList = this.list(queryWrapper);
                     //帖子有评论就加载评论
-                    if (postCommentList != null && postCommentList.size() > 0) {
+                    if (postCommentList != null && !postCommentList.isEmpty()) {
                         //查询评论用户的信息
                         List<Long> userIdList = postCommentList.stream().map(PostComment::getUserId).collect(Collectors.toList());
                         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();

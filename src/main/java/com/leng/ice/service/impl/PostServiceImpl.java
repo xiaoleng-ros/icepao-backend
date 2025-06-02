@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -108,7 +109,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         }
         //是否为帖子创建人或者管理员
         Long userId = post.getUserId();
-        if (!userService.isAdmin(loginUser) && userId != loginUser.getId()) {
+        if (!userService.isAdmin(loginUser) && !Objects.equals(userId, loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_ADMIN);
         }
         QueryWrapper<PostComment> queryWrapper = new QueryWrapper<>();
@@ -138,7 +139,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         }
         Long userId = oldPost.getUserId();
         //是否为帖子创建人或者管理员
-        if (!userService.isAdmin(loginUser) && userId != loginUser.getId()) {
+        if (!userService.isAdmin(loginUser) && !Objects.equals(userId, loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_ADMIN);
         }
         String content = postUpdateRequest.getContent();
@@ -234,7 +235,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         }
         //内容字数小于200，内容不能为空
         String content = postCommentAddRequest.getContent();
-        if (StringUtils.isBlank(content) || content.length() == 0 || content.length() >= 200) {
+        if (StringUtils.isBlank(content) || content.isEmpty() || content.length() >= 200) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容字数不符合要求");
         }
         //判断评论的pid,pid为null代表该条评论pid是帖子的创建者，反之是回复者的id
@@ -324,7 +325,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
         Long postId = postComment.getPostId();
         Post post = this.getById(postId);
         //是否为评论的创建人或者管理员，帖子的创建者
-        if (!userService.isAdmin(loginUser) && userId != loginUser.getId() && post.getUserId() != loginUser.getId()) {
+        if (!userService.isAdmin(loginUser) && !Objects.equals(userId, loginUser.getId()) && !Objects.equals(post.getUserId(), loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_ADMIN);
         }
         return postCommentService.removeById(id);

@@ -91,7 +91,6 @@ const myAxios = axios.create({
 ### 服务器安装redis
 1. 使用宝塔面板直接安装redis
 2. 配置redis https://blog.csdn.net/SpongeBob_shouse/article/details/128909794
-   （来自星球某位同学的分享）
 3. 配置完记得重新启动redis
 
 ### 后端项目打包
@@ -132,10 +131,6 @@ server:
 6. package打包，将打包好的jar文件上传服务器
 
 7. 使用宝塔的java项目运行该jar文件
-
-
-
-
 
 ## 伙伴校园的前端源码
 ***

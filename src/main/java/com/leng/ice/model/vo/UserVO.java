@@ -10,7 +10,7 @@ public class UserVO {
     /**
      * 用户id
      */
-    private long id;
+    private Long id;
 
     /**
      * 用户昵称
