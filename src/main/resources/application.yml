@@ -12,13 +12,37 @@ spring:
     password: xiaoleng
 
   # 失效时间
+  # Session配置
   session:
-    timeout: 86400
+    store-type: redis  # 使用Redis存储Session
+    timeout: 86400     # Session超时时间（秒）
+    redis:
+      namespace: "ice:session"  # Redis中Session的命名空间
+      flush-mode: on_save       # Session刷新模式
+  
+  # Redis配置
   redis:
     port: 6379
     host: localhost
-    database: 3
+    database: 1
     password: leng5201314
+    timeout: 3000
+    lettuce:
+      pool:
+        max-active: 8   # 连接池最大连接数
+        max-idle: 8     # 连接池最大空闲连接数
+        min-idle: 0     # 连接池最小空闲连接数
+        max-wait: -1ms  # 连接池最大阻塞等待时间
+    # 新增缓存配置
+    cache:
+      # 默认过期时间（秒）
+      default-ttl: 3600  # 1小时
+      # 不同业务模块的过期时间
+      ttl:
+        user-recommend: 7200    # 用户推荐：2小时
+        post-comment: 1800      # 帖子评论：30分钟
+        user-info: 3600         # 用户信息：1小时
+        team-info: 1800         # 队伍信息：30分钟
 
   mvc:
     path-match:

@@ -3,40 +3,31 @@ package com.leng.ice.config;
 import org.springframework.boot.autoconfigure.session.DefaultCookieSerializerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.MapSessionRepository;
-import org.springframework.session.SessionRepository;
-import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * session配置
+ * Redis分布式Session配置
+ * 解决集群间登录态同步问题
  */
 @Configuration
-@EnableSpringHttpSession
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 86400) // 24小时过期
 public class SessionConfig {
 
     /**
-     * 配置session存储仓库
-     * @return
-     */
-    @Bean
-    public SessionRepository sessionRepository() {
-        return new MapSessionRepository(new ConcurrentHashMap<>());
-    }
-
-    /**
-     * 配置cookieSerializer
-     * @return
+     * 配置Cookie序列化器，支持跨域
+     * @return DefaultCookieSerializerCustomizer
      */
     @Bean
     DefaultCookieSerializerCustomizer cookieSerializerCustomizer() {
         return new DefaultCookieSerializerCustomizer() {
             @Override
             public void customize(DefaultCookieSerializer cookieSerializer) {
-                cookieSerializer.setSameSite("None"); // 设置cookie的SameSite属性为None，否则跨域set-cookie会被chrome浏览器阻拦
+                cookieSerializer.setSameSite("None"); // 设置cookie的SameSite属性为None，支持跨域
                 cookieSerializer.setUseSecureCookie(true); // sameSite为None时，useSecureCookie必须为true
+                cookieSerializer.setCookieName("ICE_SESSION"); // 自定义Session Cookie名称
+                cookieSerializer.setCookiePath("/"); // Cookie路径
+                cookieSerializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // 支持子域名共享
             }
         };
     }
